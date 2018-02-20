@@ -8,18 +8,18 @@ var transporter = nodemailer.createTransport({
 });
 
 /**
- * GET /contact
+ * GET /mail
  */
-exports.contactGet = function(req, res) {
-  res.render("contact", {
-    title: "Contact"
+exports.mailGet = function(req, res) {
+  res.render("mail", {
+    title: "mail"
   });
 };
 
 /**
- * POST /contact
+ * POST /mail
  */
-exports.contactPost = function(req, res) {
+exports.mailPost = function(req, res) {
   req.assert("name", "Name cannot be blank").notEmpty();
   req.assert("email", "Email is not valid").isEmail();
   req.assert("email", "Email cannot be blank").notEmpty();

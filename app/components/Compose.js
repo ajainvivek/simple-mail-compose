@@ -1,7 +1,26 @@
 import React from "react";
+import {
+  Form,
+  Button,
+  FormControl,
+  FormGroup,
+  ControlLabel,
+  HelpBlock
+} from "react-bootstrap";
 import { connect } from "react-redux";
 import { sendEmail } from "../actions/compose";
 import Messages from "./Messages";
+
+function FieldGroup(props) {
+  let { id, label, help } = props;
+  return (
+    <FormGroup controlId={id}>
+      <ControlLabel>{label}</ControlLabel>
+      <FormControl {...props} />
+      {help && <HelpBlock>{help}</HelpBlock>}
+    </FormGroup>
+  );
+}
 
 class Compose extends React.Component {
   constructor(props) {
@@ -16,44 +35,43 @@ class Compose extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
     this.props.dispatch(
-      submitComposeForm(this.state.name, this.state.email, this.state.message)
+      sendEmail(this.state.name, this.state.email, this.state.message)
     );
   }
 
   render() {
     return (
       <div className="container">
-        <h3>Compose Form</h3>
+        <h4>New Message</h4>
         <Messages messages={this.props.messages} />
-        <form onSubmit={this.handleSubmit.bind(this)}>
-          <label htmlFor="name">Name</label>
-          <input
-            type="text"
-            name="name"
-            id="name"
-            value={this.state.name}
-            onChange={this.handleChange.bind(this)}
-            autoFocus
-          />
-          <label htmlFor="email">Email</label>
-          <input
+        <Form onSubmit={this.handleSubmit.bind(this)}>
+          <FieldGroup
+            id="sendTo"
             type="email"
-            name="email"
-            id="email"
+            label="Email"
+            placeholder="To"
             value={this.state.email}
             onChange={this.handleChange.bind(this)}
           />
-          <label htmlFor="message">Body</label>
-          <textarea
-            name="message"
+          <FieldGroup
+            id="subject"
+            type="text"
+            label="Subject"
+            placeholder="Subject"
+            value={this.state.name}
+            onChange={this.handleChange.bind(this)}
+          />
+          <FieldGroup
             id="message"
-            rows="7"
+            type="textarea"
+            label="Message"
+            placeholder="Enter message..."
             value={this.state.message}
             onChange={this.handleChange.bind(this)}
           />
           <br />
-          <button type="submit">Send</button>
-        </form>
+          <Button type="submit">Send</Button>
+        </Form>
       </div>
     );
   }

@@ -5,11 +5,7 @@ class Header extends React.Component {
   render() {
     return (
       <div className="container">
-        <ul className="list-inline">
-          <li>
-            <Link to="/compose">Compose Mail</Link>
-          </li>
-        </ul>
+        <h2>Simple Email Compose</h2>
       </div>
     );
   }
