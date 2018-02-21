@@ -1,5 +1,9 @@
 ## Simple Mail Compose
 
+### Architecture
+
+![Circuit Breaker Pattern](https://i.imgur.com/J0es6pR.png "Circuit Breaker Pattern")
+
 ### Configuration
 
 * **Platform:** node
