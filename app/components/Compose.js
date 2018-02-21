@@ -25,7 +25,11 @@ function FieldGroup(props) {
 class Compose extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { name: "", email: "", message: "" };
+    this.state = {
+      name: "ajain",
+      email: "ajainvivek16@gmail.com",
+      message: "hey there"
+    };
   }
 
   handleChange(event) {

@@ -1,20 +1,12 @@
-var nodemailer = require("nodemailer");
-var transporter = nodemailer.createTransport({
-  service: "Mailgun",
-  auth: {
-    user: process.env.MAILGUN_USERNAME,
-    pass: process.env.MAILGUN_PASSWORD
-  }
-});
+const mailService = require("./../services/mailService");
+const CircuitBreaker = require("circuit-breaker-js");
 
-/**
- * GET /mail
- */
-exports.mailGet = function(req, res) {
-  res.render("mail", {
-    title: "mail"
-  });
-};
+// initialize circuit breaker with fault tolerance config
+const breaker = new CircuitBreaker({
+  timeoutDuration: 1000,
+  volumeThreshold: 1,
+  errorThreshold: 50
+});
 
 /**
  * POST /mail
@@ -26,20 +18,65 @@ exports.mailPost = function(req, res) {
   req.assert("message", "Message cannot be blank").notEmpty();
   req.sanitize("email").normalizeEmail({ remove_dots: false });
 
-  var errors = req.validationErrors();
+  let errors = req.validationErrors();
 
   if (errors) {
     return res.status(400).send(errors);
   }
 
-  var mailOptions = {
+  // mail options to be passed
+  let mailOptions = {
     from: req.body.name + " " + "<" + req.body.email + ">",
     to: "your@email.com",
     subject: req.body.subject || "",
     text: req.body.message
   };
 
-  transporter.sendMail(mailOptions, function(err) {
-    res.send({ msg: "Thank you! Your feedback has been submitted." });
-  });
+  // mailgun config
+  let mgConfig = {
+    service: "Mailgun",
+    auth: {
+      user: process.env.MAILGUN_USERNAME,
+      pass: process.env.MAILGUN_PASSWORD
+    }
+  };
+
+  // sendgrid config
+  let sgConfig = {
+    service: "SendGrid",
+    auth: {
+      api_user: process.env.SENDGRID_USERNAME,
+      api_key: process.env.SENDGRID_PASSWORD
+    }
+  };
+
+  // fallback if the command execution fails
+  let fallback = () => {
+    mailService(mgConfig)
+      .sendMail(mailOptions)
+      .then(response => {
+        res.send(response);
+      })
+      .catch(err => {
+        res.send({
+          success: false
+        });
+      });
+  };
+
+  // command to initially execute
+  let command = (success, failure) => {
+    mailService(sgConfig)
+      .sendMail(mailOptions)
+      .then(response => {
+        res.send(response);
+        success();
+      })
+      .catch(err => {
+        fallback();
+        failure();
+      });
+  };
+
+  breaker.run(command, fallback);
 };
