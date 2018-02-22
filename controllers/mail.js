@@ -27,8 +27,8 @@ exports.mailPost = function(req, res) {
   // mail options to be passed
   let mailOptions = {
     from: req.body.name + " " + "<" + req.body.email + ">",
-    to: "your@email.com",
-    subject: req.body.subject || "",
+    to: "ajainvivek16@gmail.com",
+    subject: req.body.subject || "Testing",
     text: req.body.message
   };
 
@@ -45,7 +45,6 @@ exports.mailPost = function(req, res) {
   let sgConfig = {
     service: "SendGrid",
     auth: {
-      api_user: process.env.SENDGRID_USERNAME,
       api_key: process.env.SENDGRID_PASSWORD
     }
   };
