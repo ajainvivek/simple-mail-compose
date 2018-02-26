@@ -12,11 +12,13 @@ const breaker = new CircuitBreaker({
  * POST /mail
  */
 exports.mailPost = function(req, res) {
-  req.assert("name", "Name cannot be blank").notEmpty();
-  req.assert("email", "Email is not valid").isEmail();
-  req.assert("email", "Email cannot be blank").notEmpty();
-  req.assert("message", "Message cannot be blank").notEmpty();
-  req.sanitize("email").normalizeEmail({ remove_dots: false });
+  req.assert("to", "To address is not valid email").isEmail();
+  req.assert("to", "To address cannot be blank").notEmpty();
+  req.assert("from", "From address is not valid email").isEmail();
+  req.assert("from", "From address cannot be blank").notEmpty();
+  req.assert("subject", "Message cannot be blank").notEmpty();
+  req.sanitize("to").normalizeEmail({ remove_dots: false });
+  req.sanitize("from").normalizeEmail({ remove_dots: false });
 
   let errors = req.validationErrors();
 
@@ -24,12 +26,14 @@ exports.mailPost = function(req, res) {
     return res.status(400).send(errors);
   }
 
+  const { to, from, subject, cc, bcc } = req.body;
+
   // mail options to be passed
   let mailOptions = {
-    from: req.body.name + " " + "<" + req.body.email + ">",
-    to: "your@email.com",
-    subject: req.body.subject || "",
-    text: req.body.message
+    from,
+    to,
+    subject,
+    text: subject
   };
 
   // mailgun config
