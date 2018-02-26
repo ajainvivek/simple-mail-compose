@@ -16,7 +16,8 @@ exports.mailPost = function(req, res) {
   req.assert("to", "To address cannot be blank").notEmpty();
   req.assert("from", "From address is not valid email").isEmail();
   req.assert("from", "From address cannot be blank").notEmpty();
-  req.assert("subject", "Message cannot be blank").notEmpty();
+  req.assert("subject", "Subject cannot be blank").notEmpty();
+  req.assert("message", "Message cannot be blank").notEmpty();
   req.sanitize("to").normalizeEmail({ remove_dots: false });
   req.sanitize("from").normalizeEmail({ remove_dots: false });
 
@@ -26,14 +27,14 @@ exports.mailPost = function(req, res) {
     return res.status(400).send(errors);
   }
 
-  const { to, from, subject, cc, bcc } = req.body;
+  const { to, from, subject, message, cc, bcc } = req.body;
 
   // mail options to be passed
   let mailOptions = {
     from,
     to,
     subject,
-    text: subject
+    text: message
   };
 
   // mailgun config

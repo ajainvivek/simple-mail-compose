@@ -9,13 +9,14 @@ class Compose extends React.Component {
     return {
       title: "New Message",
       type: "object",
-      required: ["to", "from", "subject"],
+      required: ["to", "from", "subject", "message"],
       properties: {
         from: { type: "string", title: "From", default: "" },
         to: { type: "string", title: "To", default: "" },
         cc: { type: "string", title: "Cc", default: "" },
         bcc: { type: "string", title: "Bcc", default: "" },
-        subject: { type: "string", title: "Subject", default: "" }
+        subject: { type: "string", title: "Subject", default: "" },
+        message: { type: "string", title: "Message", default: "" }
       }
     };
   }
@@ -36,7 +37,7 @@ class Compose extends React.Component {
       bcc: {
         "ui:widget": "email"
       },
-      subject: {
+      message: {
         "ui:widget": "textarea"
       }
     };
