@@ -1,80 +1,64 @@
 import React from "react";
-import {
-  Form,
-  Button,
-  FormControl,
-  FormGroup,
-  ControlLabel,
-  HelpBlock
-} from "react-bootstrap";
+import Form from "react-jsonschema-form";
 import { connect } from "react-redux";
 import { sendEmail } from "../actions/compose";
 import Messages from "./Messages";
 
-function FieldGroup(props) {
-  let { id, label, help } = props;
-  return (
-    <FormGroup controlId={id}>
-      <ControlLabel>{label}</ControlLabel>
-      <FormControl {...props} />
-      {help && <HelpBlock>{help}</HelpBlock>}
-    </FormGroup>
-  );
-}
-
 class Compose extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      name: "ajain",
-      email: "ajainvivek16@gmail.com",
-      message: "hey there"
+  getSchema() {
+    return {
+      title: "New Message",
+      type: "object",
+      required: ["to", "from", "subject"],
+      properties: {
+        from: { type: "string", title: "From", default: "" },
+        to: { type: "string", title: "To", default: "" },
+        cc: { type: "string", title: "Cc", default: "" },
+        bcc: { type: "string", title: "Bcc", default: "" },
+        subject: { type: "string", title: "Subject", default: "" }
+      }
     };
   }
 
-  handleChange(event) {
-    this.setState({ [event.target.name]: event.target.value });
+  getUiSchema() {
+    return {
+      to: {
+        "ui:autofocus": true,
+        "ui:widget": "email",
+        "ui:emptyValue": ""
+      },
+      from: {
+        "ui:widget": "email"
+      },
+      cc: {
+        "ui:widget": "email"
+      },
+      bcc: {
+        "ui:widget": "email"
+      },
+      subject: {
+        "ui:widget": "textarea"
+      }
+    };
   }
 
-  handleSubmit(event) {
+  handleSubmit({ formData }) {
     event.preventDefault();
-    this.props.dispatch(
-      sendEmail(this.state.name, this.state.email, this.state.message)
-    );
+    this.props.dispatch(sendEmail(formData));
   }
 
   render() {
+    const schema = this.getSchema();
+    const uiSchema = this.getUiSchema();
     return (
       <div className="container">
-        <h4>New Message</h4>
         <Messages messages={this.props.messages} />
-        <Form onSubmit={this.handleSubmit.bind(this)}>
-          <FieldGroup
-            id="sendTo"
-            type="email"
-            label="Email"
-            placeholder="To"
-            value={this.state.email}
-            onChange={this.handleChange.bind(this)}
-          />
-          <FieldGroup
-            id="subject"
-            type="text"
-            label="Subject"
-            placeholder="Subject"
-            value={this.state.name}
-            onChange={this.handleChange.bind(this)}
-          />
-          <FieldGroup
-            id="message"
-            type="textarea"
-            label="Message"
-            placeholder="Enter message..."
-            value={this.state.message}
-            onChange={this.handleChange.bind(this)}
-          />
-          <br />
-          <Button type="submit">Send</Button>
+        <Form schema={schema} uiSchema={uiSchema} onSubmit={this.handleSubmit}>
+          <div>
+            <button type="submit" className="btn btn-info">
+              Send
+            </button>
+          </div>
         </Form>
       </div>
     );
