@@ -1,4 +1,4 @@
-export function sendEmail(name, email, message) {
+export function sendEmail(data) {
   return dispatch => {
     dispatch({
       type: "CLEAR_MESSAGES"
@@ -6,11 +6,7 @@ export function sendEmail(name, email, message) {
     return fetch("/mail", {
       method: "post",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: name,
-        email: email,
-        message: message
-      })
+      body: JSON.stringify(data)
     }).then(response => {
       if (response.ok) {
         return response.json().then(json => {

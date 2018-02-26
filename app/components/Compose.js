@@ -53,13 +53,11 @@ class Compose extends React.Component {
     return (
       <div className="container">
         <Messages messages={this.props.messages} />
-        <Form schema={schema} uiSchema={uiSchema} onSubmit={this.handleSubmit}>
-          <div>
-            <button type="submit" className="btn btn-info">
-              Send
-            </button>
-          </div>
-        </Form>
+        <Form
+          schema={schema}
+          uiSchema={uiSchema}
+          onSubmit={this.handleSubmit.bind(this)}
+        />
       </div>
     );
   }
